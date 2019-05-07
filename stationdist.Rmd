@@ -1,0 +1,62 @@
+---
+title: "Distance between Seoul Stations"
+output: github_document
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(sf)
+library(knitr)
+library(kableExtra)
+```
+
+
+```{r variables, include=F, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+library(sf)
+library(shiny)
+shp <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/Seoul_City.shp")
+st <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/stations_10km.shp")
+rd <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/road_10km.shp")
+back <- st %>% filter(F.R == "Fixed")
+road <- st %>% filter(F.R == "Road")
+```
+
+## Stations
+
+```{r table, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+stations <- st %>% 
+            select(-c(X,Y,Station,Road_Dist)) %>% 
+            st_set_geometry(NULL) %>%
+            arrange(F.R) 
+
+kable(stations, caption = "Group Rows") %>%
+  kable_styling("striped", full_width = F) %>%
+  pack_rows("Background Stations", 1, 57) %>%
+  pack_rows("Roadside Stations", 58, 76)
+```
+
+
+## Maps
+
+```{r map1, message=FALSE, echo=F, warning=F}
+plot(st_geometry(rd), col = 'grey',key.pos=NULL, reset = F,axes = TRUE, main = "")
+plot(st_geometry(shp), add = T)
+plot(st["F.R"], pch = 19 , add = T)
+#mapview::mapview(st["F.R"])
+```
+
+
+## Distance
+
+```{r dist, message=FALSE, echo=F, warning=F}
+result.back <- st_distance(back, back, by_element = F)
+result.road <- st_distance(road, road, by_element = F)
+
+colnames(result.back) <- back$Name
+colnames(result.road) <- road$Name
+
+result.back
+
+```

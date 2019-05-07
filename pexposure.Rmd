@@ -1,0 +1,254 @@
+---
+title: "How can Modelled Air Pollution be compared with Personal Measurement?"
+subtitle: "*Focusing on backpack sensoring data*"
+author: "Hyesop Shin"
+date: "`r format(Sys.Date())`"
+
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(tmap)
+library(tmaptools)
+library(ggpmisc) # add peak points
+library(plotly)
+
+gps <- st_read("pexposure/real_original.shp")
+seoul <- st_read("pexposure/seoul_gu.shp")
+river <- st_read("pexposure/han_seoul.shp")
+seoul_shp <- st_read("pexposure/seoul_gu.shp") %>% as('Spatial')
+gps_df <- gps %>% dplyr::select(-time1)
+gps_df$date <- as.Date(gps_df$time)
+gps_df$datetime <- as.POSIXct(gps_df$time, format = "%Y-%m-%d %H:%M", tz = "Asia/Seoul") 
+gps_df$hour <- lubridate::hour(gps_df$datetime)
+gps_df$hour <- gps_df$hour + 1
+gps_df$daynight <- ifelse(gps_df$hour >= 08 & gps_df$hour <= 19, "office", "home")
+
+exposure_summer <- gps_df %>% filter(date >= "2013-07-25" & date <= "2013-09-30" & loc1 != 1, pm10 != 0) %>% arrange(datetime)
+exposure_summer <- exposure_summer %>% 
+                    mutate(loc1_1nm = case_when(loc1_1 == 10 ~ "Restaurant",
+                                                loc1_1 == 11 ~ "Cafe",
+                                                loc1_1 == 12 ~ "BBQ grill",
+                                                loc1_1 == 13 ~ "Bar",
+                                                loc1_1 == 14 ~ "Office",
+                                                loc1_1 == 15 ~ "Traditional market",
+                                                loc1_1 == 16 ~ "Superstore",
+                                                loc1_1 == 17 ~ "Department store",
+                                                loc1_1 == 18 ~ "Shopping complex",
+                                                loc1_1 == 19 ~ "Other shops",
+                                                loc1_1 == 20 ~ "Workplace",
+                                                loc1_1 == 21 ~ "Bank",
+                                                loc1_1 == 22 ~ "School",
+                                                loc1_1 == 23 ~ "Academy",
+                                                loc1_1 == 24 ~ "Bookshop",
+                                                loc1_1 == 25 ~ "Senior centre",
+                                                loc1_1 == 26 ~ "Stroll",
+                                                loc1_1 == 27 ~ "Walking",
+                                                loc1_1 == 28 ~ "Bus",
+                                                loc1_1 == 29 ~ "Subway",
+                                                loc1_1 == 30 ~ "Taxi",
+                                                loc1_1 == 31 ~ "Vehicle",
+                                                loc1_1 == 32 ~ "Home",
+                                                loc1_1 == 999 ~ "Missing data"
+                                                ))
+```
+
+class: left, top
+
+# Today's Scope: A Graphical Abstract
+
+```{r abstract, echo=FALSE, fig.show = 'hold', out.width = "100%", fig.align= "center", fig.cap = ""}
+knitr::include_graphics("pexposure/model_person.png")
+```
+
+
+---
+class: inverse, center, middle
+
+# Rationale
+
+---
+class: left, top
+
+# Rationale
+
+- Ignoring the spatiotemporal variability of environmental risk factors and human mobility may lead to misleading results in exposure assessment (Kwan, 2017)
+
+--
+
+> 
+- **Where people live** is often not the only important factor in determining their exposure to environmental factors
+- Rather, **where people visit** and **how much time they spend at** a particualr location are more relevant to assessing the effects of environmental factors on people's health behaviours or outcomes
+
+
+---
+class: inverse, center, middle
+
+# Personal measurement of PM<sub>10</sub> Exposures
+---
+class: left, top
+
+# Overview of Trajectories
+
+* Location [Codes](https://github.com/mrsensible/GAM/blob/master/GAM_update_181223.md)
+```{r codes, message=F, eval=F}
+exposure_summer %>% mutate(loc1_1nm = case_when(loc1_1 == 10 ~ "Restaurant",
+loc1_1 == 11 ~ "Cafe",    loc1_1 == 12 ~ "BBQ grill",
+loc1_1 == 13 ~ "Bar",     loc1_1 == 14 ~ "Office",
+loc1_1 == 15 ~ "Traditional market", loc1_1 == 16 ~ "Superstore",
+loc1_1 == 17 ~ "Department store",   loc1_1 == 18 ~ "Shopping complex",
+loc1_1 == 19 ~ "Other shops", loc1_1 == 20 ~ "Workplace",
+loc1_1 == 21 ~ "Bank",    loc1_1 == 22 ~ "School",
+loc1_1 == 23 ~ "Academy", loc1_1 == 24 ~ "Bookshop",
+loc1_1 == 25 ~ "Senior centre", loc1_1 == 26 ~ "Stroll",
+loc1_1 == 27 ~ "Walking", loc1_1 == 28 ~ "Bus",
+loc1_1 == 29 ~ "Subway",  loc1_1 == 30 ~ "Taxi",
+loc1_1 == 31 ~ "Vehicle", loc1_1 == 32 ~ "Home",
+loc1_1 == 999 ~ "Missing data"))
+```
+
+---
+class: left, top
+
+# Overview of Trajectories(Cont.)
+
+* 16142 records of 5 individual backpack sensors measured by minutes
+
+```{r overall, echo=F, message=F}
+tmap_mode("view")
+
+tm_shape(seoul) +
+  tm_borders() +
+  tm_markers(text = "SIGUNGU_EN") +
+tm_shape(exposure_summer) + 
+  tm_dots("pm10", breaks = c(0, 25, 50, 75, 100), id = "loc1_1", title = "PM10 summer")
+
+```
+
+---
+class: left, top
+
+# Features of Places
+
+```{r places2, echo=F, message=F, warning=F}
+outside <- gps_df %>% filter(date >= "2013-07-25" & date <= "2013-09-30" & loc1 != 1 & pm10 != 0 & pm10 < 150 & loc1_1 != 14 & loc1_1 != 28 & loc1_1 != 29 & loc1_1 != 30)  %>% arrange(datetime) 
+
+outside %>% 
+  ggplot() +
+  geom_point(aes(x = X, y = Y, colour = pm10), shape = 21, size = 2) +
+  scale_color_gradientn(colors = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  stat_ellipse(data = outside, aes(X, Y)) +
+  #facet_wrap(~who, ncol = 5) +
+  xlim(179171, 216221) + 
+  ylim(436569, 466856) +
+  geom_sf(data = seoul, colour="grey", fill=NA) + 
+  theme_bw() +
+  theme(axis.text.x = element_blank())
+```
+  
+---
+class: left, top
+
+# Exposure levels by researchers
+
+```{r byresearcher, echo=F, warning=F, message=F}
+knitr::include_graphics("pexposure/exposure-by-researcher.png")
+```
+
+---
+class: left, top
+
+# Highly polluted areas?
+
+```{r highpolluted, echo=F, warning=F, message=F}
+exposure_summer %>% filter(pm10 >= 200 & loc1_1 != 999) -> high
+
+high %>% 
+  ggplot(aes(x = factor(loc1_1nm), fill = factor(loc1_1nm))) + 
+  geom_bar(stat="count", color="black") +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(factor(high$loc1_1nm)))) +
+  ggtitle(label = "Places of PM10 concentrations over 200µg/m3: Counts by minutes",
+          subtitle = "Records of 419 Observations") +
+  xlab("Counts by minutes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+  axis.ticks.x=element_blank(),
+  axis.title.y=element_blank(),
+  strip.text.x = element_text(size = 20),
+  legend.position = "none"
+  )
+
+
+```
+
+---
+class: left, top
+
+# Highly polluted areas?
+
+```{r highstats, echo=F, warning=F, message=F}
+highstats <- exposure_summer %>% 
+  st_set_geometry(NULL) %>% 
+  group_by(loc1_1, loc1_1nm) %>% 
+  summarise(mean_pm10 = round(mean(pm10),2),
+            sd_pm10 = round(sd(pm10),2),
+            min_pm10 =min(pm10),
+            max_pm10 = max(pm10), 
+            count = length(pm10)
+            ) %>% print(n = 22)
+
+knitr::kable(highstats)
+
+```
+
+---
+class: left, top
+
+# PM10 Exposure by Transport Modes
+
+```{r transport, echo=F, warning=F, message=F}
+trans_model <- exposure_summer %>% 
+    st_set_geometry(NULL) %>% 
+    filter(loc1_1 %in% c(28:31)) 
+p <- trans_model %>% 
+  ggplot(aes(x = loc1_1nm, y = pm10)) +
+  geom_violin(aes(fill = loc1_1nm), trim = T) +
+  stat_summary(fun.y=median, geom="point", shape=23, size=2) +
+  geom_boxplot(width=0.1, outlier.shape = NA) +
+  ylim(0,500) +
+  scale_fill_brewer(palette="RdBu") +
+  theme_minimal() +
+  theme(legend.position="none",
+        axis.title.x = element_blank()
+  )
+ggplotly(p)
+```
+
+---
+class: inverse, center, middle
+
+# (Near) Future works
+
+---
+class: left, top
+# Aggregation of time scales to compare modelled outputs
+
+```{r future, echo=FALSE, message=F, fig.show = 'hold', out.width = "100%", fig.align= "center", fig.cap = ""}
+knitr::include_graphics("pexposure/12hourmean.png")
+```
+
+---
+class: inverse, center, middle
+
+# Thank You

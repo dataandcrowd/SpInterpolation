@@ -1,0 +1,74 @@
+---
+title: "GAM Update Feb.26th"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Interpolating Pollution Fields with Addtional Road Effects 
+![](GAM_update_0226_files/figure-markdown_github/procedure.png)
+
+* Overview
+1. Data collection <br>
+2. Preparation of road effects<br>
+3. Application to the GAM model<br>
+
+### 1. Data Collection
+
+#### 1.1. Pollution
+
+* Source: This study used a total of 76 monitoring stations around Seoul, of which 25 background stations and 15 roadside stations were stuated in Seoul, and 32 background stations and 4 roadside stations were spasely located within 10km distance from the city boundary.
+* Temporal period - daily: Hourly pollution measurements were aggreated to 12 hours and splitted as office and home hours. Office hours were assigned between 08 and 20 hour pollutants, while home hours were assigned between 21 and 07 hours.
+* Temporal period - seasonally: Summer 0725 - 0930; Winter 1202-0226
+
+#### 1.2. Road
+* Source: Korean Transport Database (KTDB). Road rank info provides codes of road types.
+* 101: Highway, national
+* 102: Highway, urban
+* 103: National road
+* 104: Metropolitan road
+* 105: Rural road, govenment supported
+* 106: Rural road
+* 107: County road
+* 108: Highway ramp
+
+
+### 2. Preparation of road effects
+
+#### 2.1. Clean road data
+* Exclude irrelevant roadset 105, 106
+* Group road ranks into two types: 1) General road (103, 104), 2) Highway (101, 102, 108)
+* Apply buffer distance of 200m as a dispersion of highway pollution effect; Dissolve outcome
+* Rasterise each general and newly created highway roads
+* Integrate raster files using 'Mosaic to new raster' function in ArcGIS
+
+#### 2.2. Comapre pollution levels between background and roadside stations
+* Measure 12 hour average of background stations
+* Measure 12 hour average of roadside stations
+* Compare ratio
+```{r, echo=F}
+library(knitr)
+library(tidyverse)
+no2 <- read.csv("GAM_update_0226_files/figure-markdown_github/no2.csv")
+kable(no2 %>% slice(1:20))
+
+```
+
+### 3. Application to the GAM model
+The maps below show an integration of NO2 concentration with an additional ratio of road pollution between July 25th and 31st 2013. High pollution episodes mostly happened during working hours than the home hours, and we can clearly see a particularly high NO2 load on road on the 26th, 27th and 30th.
+
+![Integrated NO2 Concentration Maps including road effect between July 25th and 31st 2013. ](GAM_update_0226_files/figure-markdown_github/july.png)
+
+The maps below show an integration of NO2 concentration with an additional ratio of road pollution between August 1st and 10th, 2013. Similarly, high pollution episodes mostly happened during working hours than the home hours. High NO2 days include 1st, 5th, and 8th, but if you look closely, while the detrimental NO2 effect has affected partly on the 5th and 8th, NO2 on the first has caused high pollution at most areas (The colour scheme needs some change indeed).
+
+![Integrated NO2 Concentration Maps including road effect between August 1st and 10th 2013. ](GAM_update_0226_files/figure-markdown_github/aug.png)
+
+
+### 4. Next step
+
+* Calibrate with backpack sensor data
+* Apply defacto population
+* Try measure exposure-response
+![exposure-response](GAM_update_0226_files/figure-markdown_github/er.PNG)
