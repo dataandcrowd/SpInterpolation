@@ -18,10 +18,11 @@ Hyesop Shin
     factors and human mobility may lead to misleading results in
     exposure assessment (See [Yoo Min Park and Mei-Po
     Kwan](https://www.sciencedirect.com/science/article/pii/S1353829216304415))
-    \>
-  - **Where people live** is often not the only important factor in
+    \
+    
+  - > **Where people live** is often not the only important factor in
     determining their exposure to environmental factors
-  - Rather, **where people visit** and **how much time they spend at** a
+  - > Rather, **where people visit** and **how much time they spend at** a
     particualr location are more relevant to assessing the effects of
     environmental factors on people’s health behaviours or outcomes
 
@@ -84,8 +85,6 @@ Campus.
 
 ![](pexposure_files/figure-gfm/places2-1.png)<!-- -->
 
-<br><br><br>
-
 ## Exposure levels by researchers
 
 ![](pexposure_files/figure-gfm/byresearcher-1.png)<!-- -->
@@ -96,13 +95,11 @@ Campus.
 
 <br><br><br>
 
-## Polluted area
+## Highly polluted areas?
 
 ![](pexposure_files/figure-gfm/highpolluted-1.png)<!-- -->
 
-<br><br><br>
-
-## Highly polluted areas?
+<br><br>
 
 | loc1\_1 | loc1\_1nm          | mean\_pm10 | sd\_pm10 | min\_pm10 | max\_pm10 | count |
 | ------: | :----------------- | ---------: | -------: | --------: | --------: | ----: |
