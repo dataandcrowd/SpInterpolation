@@ -1,17 +1,16 @@
 ---
-title: "How can Modelled Air Pollution be compared with Personal Measurement?"
-subtitle: "*Focusing on backpack sensoring data*"
+title: "How can we compare a Modelled outcome with a Personal Measurement outcome?"
+#subtitle: "*Focusing on backpack sensoring data*"
 author: "Hyesop Shin"
 date: "`r format(Sys.Date())`"
-
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
+output: github_document
 ---
+
+## Abstract
+
+```{r abstract, echo=F}
+knitr::include_graphics("pexposure/abstract.png")
+```
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
@@ -63,82 +62,75 @@ exposure_summer <- exposure_summer %>%
                                                 ))
 ```
 
-class: left, top
+<br><br><br>
 
-# Today's Scope: A Graphical Abstract
+## Rationale
 
-```{r abstract, echo=FALSE, fig.show = 'hold', out.width = "100%", fig.align= "center", fig.cap = ""}
-knitr::include_graphics("pexposure/model_person.png")
+```{r journal, echo=F}
+knitr::include_graphics("pexposure/journal.PNG")
 ```
 
-
----
-class: inverse, center, middle
-
-# Rationale
-
----
-class: left, top
-
-# Rationale
-
-- Ignoring the spatiotemporal variability of environmental risk factors and human mobility may lead to misleading results in exposure assessment (Kwan, 2017)
-
---
+- Ignoring the spatiotemporal variability of environmental risk factors and human mobility may lead to misleading results in exposure assessment (See [Yoo Min Park and Mei-Po Kwan](https://www.sciencedirect.com/science/article/pii/S1353829216304415))
 
 > 
 - **Where people live** is often not the only important factor in determining their exposure to environmental factors
 - Rather, **where people visit** and **how much time they spend at** a particualr location are more relevant to assessing the effects of environmental factors on people's health behaviours or outcomes
 
+<br><br><br>
 
----
-class: inverse, center, middle
-
-# Personal measurement of PM<sub>10</sub> Exposures
----
-class: left, top
-
-# Overview of Trajectories
+## Personal measurement of PM<sub>10</sub> Exposures
 
 * Location [Codes](https://github.com/mrsensible/GAM/blob/master/GAM_update_181223.md)
 ```{r codes, message=F, eval=F}
-exposure_summer %>% mutate(loc1_1nm = case_when(loc1_1 == 10 ~ "Restaurant",
-loc1_1 == 11 ~ "Cafe",    loc1_1 == 12 ~ "BBQ grill",
-loc1_1 == 13 ~ "Bar",     loc1_1 == 14 ~ "Office",
-loc1_1 == 15 ~ "Traditional market", loc1_1 == 16 ~ "Superstore",
-loc1_1 == 17 ~ "Department store",   loc1_1 == 18 ~ "Shopping complex",
-loc1_1 == 19 ~ "Other shops", loc1_1 == 20 ~ "Workplace",
-loc1_1 == 21 ~ "Bank",    loc1_1 == 22 ~ "School",
-loc1_1 == 23 ~ "Academy", loc1_1 == 24 ~ "Bookshop",
-loc1_1 == 25 ~ "Senior centre", loc1_1 == 26 ~ "Stroll",
-loc1_1 == 27 ~ "Walking", loc1_1 == 28 ~ "Bus",
-loc1_1 == 29 ~ "Subway",  loc1_1 == 30 ~ "Taxi",
-loc1_1 == 31 ~ "Vehicle", loc1_1 == 32 ~ "Home",
-loc1_1 == 999 ~ "Missing data"))
+exposure_summer %>% 
+    mutate(loc1_1nm = case_when(loc1_1 == 10 ~ "Restaurant",
+            loc1_1 == 11 ~ "Cafe",
+            loc1_1 == 12 ~ "BBQ grill",
+            loc1_1 == 13 ~ "Bar",
+            loc1_1 == 14 ~ "Office",
+            loc1_1 == 15 ~ "Traditional market",
+            loc1_1 == 16 ~ "Superstore",
+            loc1_1 == 17 ~ "Department store",
+            loc1_1 == 18 ~ "Shopping complex",
+            loc1_1 == 19 ~ "Other shops",
+            loc1_1 == 20 ~ "Workplace",
+            loc1_1 == 21 ~ "Bank",
+            loc1_1 == 22 ~ "School",
+            loc1_1 == 23 ~ "Academy",
+            loc1_1 == 24 ~ "Bookshop",
+            loc1_1 == 25 ~ "Senior centre",
+            loc1_1 == 26 ~ "Stroll",
+            loc1_1 == 27 ~ "Walking",
+            loc1_1 == 28 ~ "Bus",
+            loc1_1 == 29 ~ "Subway",
+            loc1_1 == 30 ~ "Taxi",
+            loc1_1 == 31 ~ "Vehicle",
+            loc1_1 == 32 ~ "Home",
+            loc1_1 == 999 ~ "Missing data"
+            ))
 ```
 
----
-class: left, top
+<br><br><br>
 
-# Overview of Trajectories(Cont.)
+## Overview of Trajectories(Cont.)
 
 * 16142 records of 5 individual backpack sensors measured by minutes
 
 ```{r overall, echo=F, message=F}
 tmap_mode("view")
-
 tm_shape(seoul) +
   tm_borders() +
-  tm_markers(text = "SIGUNGU_EN") +
 tm_shape(exposure_summer) + 
   tm_dots("pm10", breaks = c(0, 25, 50, 75, 100), id = "loc1_1", title = "PM10 summer")
 
 ```
 
----
-class: left, top
+<br><br><br>
 
-# Features of Places
+## Clusters of footprints
+- Points are the footprints for each researcher
+- The ellipsoid represents the 95% confidence of the distribution of points on the map
+- The footprint of researchers are centered in Gwanak district, particularly situated in the University Campus.
 
 ```{r places2, echo=F, message=F, warning=F}
 outside <- gps_df %>% filter(date >= "2013-07-25" & date <= "2013-09-30" & loc1 != 1 & pm10 != 0 & pm10 < 150 & loc1_1 != 14 & loc1_1 != 28 & loc1_1 != 29 & loc1_1 != 30)  %>% arrange(datetime) 
@@ -148,27 +140,48 @@ outside %>%
   geom_point(aes(x = X, y = Y, colour = pm10), shape = 21, size = 2) +
   scale_color_gradientn(colors = c("#00AFBB", "#E7B800", "#FC4E07")) +
   stat_ellipse(data = outside, aes(X, Y)) +
-  #facet_wrap(~who, ncol = 5) +
+  facet_wrap(~who, ncol = 5) +
   xlim(179171, 216221) + 
   ylim(436569, 466856) +
   geom_sf(data = seoul, colour="grey", fill=NA) + 
   theme_bw() +
   theme(axis.text.x = element_blank())
 ```
-  
----
-class: left, top
 
-# Exposure levels by researchers
+<br><br><br>
+
+## Exposure levels by researchers
+
 
 ```{r byresearcher, echo=F, warning=F, message=F}
-knitr::include_graphics("pexposure/exposure-by-researcher.png")
+library(OpenStreetMap)
+exposure_summer %>% filter(pm10 >= 200 & loc1_1 != 999) -> high
+
+gwanak <- seoul[seoul$SIGUNGU_CD == 11210,]
+exposure_gw <- crop_shape(high, gwanak, polygon = TRUE)
+gwanak_osm <- read_osm(gwanak, type = "osm", zoom = 14)
+tmap_mode("plot")
+qtm(gwanak_osm) +
+  qtm(exposure_gw, dots.size = 0.2)#, by = "who")
+
 ```
 
----
-class: left, top
+<br><br>
 
-# Highly polluted areas?
+```{r byresearcher1, echo=F, warning=F, message=F}
+library(ggpmisc) # add peak points
+exposure_summer %>% 
+  ggplot(aes(date, y = pm10)) +
+  geom_line(aes(colour = factor(who)), size = 1) +
+  stat_peaks(colour = "grey40", alpha = .15) +
+  ylim(0,500) +
+  facet_wrap(~ who, ncol = 1, strip.position="right") +
+  theme_minimal()
+```
+
+<br><br><br>
+
+## Highly polluted areas?
 
 ```{r highpolluted, echo=F, warning=F, message=F}
 exposure_summer %>% filter(pm10 >= 200 & loc1_1 != 999) -> high
@@ -188,14 +201,9 @@ high %>%
   strip.text.x = element_text(size = 20),
   legend.position = "none"
   )
-
-
 ```
 
----
-class: left, top
-
-# Highly polluted areas?
+<br><br>
 
 ```{r highstats, echo=F, warning=F, message=F}
 highstats <- exposure_summer %>% 
@@ -206,21 +214,21 @@ highstats <- exposure_summer %>%
             min_pm10 =min(pm10),
             max_pm10 = max(pm10), 
             count = length(pm10)
-            ) %>% print(n = 22)
+            ) #%>% print(n = 22)
 
 knitr::kable(highstats)
-
 ```
 
----
-class: left, top
+<br><br><br>
 
-# PM10 Exposure by Transport Modes
+## PM<sub>10</sub> Exposure by Transport Modes
 
 ```{r transport, echo=F, warning=F, message=F}
 trans_model <- exposure_summer %>% 
     st_set_geometry(NULL) %>% 
-    filter(loc1_1 %in% c(28:31)) 
+    filter(loc1_1 %in% c(26:31))
+
+
 p <- trans_model %>% 
   ggplot(aes(x = loc1_1nm, y = pm10)) +
   geom_violin(aes(fill = loc1_1nm), trim = T) +
@@ -235,20 +243,11 @@ p <- trans_model %>%
 ggplotly(p)
 ```
 
----
-class: inverse, center, middle
+<br><br><br>
 
-# (Near) Future works
-
----
-class: left, top
-# Aggregation of time scales to compare modelled outputs
-
+## (Near) Future works
+- Use *walking* and *strolling* info to compare modelled outcome
+- Consider time scale from minutes to 12 hour aggregation
 ```{r future, echo=FALSE, message=F, fig.show = 'hold', out.width = "100%", fig.align= "center", fig.cap = ""}
 knitr::include_graphics("pexposure/12hourmean.png")
 ```
-
----
-class: inverse, center, middle
-
-# Thank You
