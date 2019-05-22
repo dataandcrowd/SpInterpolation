@@ -3588,3 +3588,28 @@ Road
 ![](stationdist_files/figure-gfm/map1-1.png)<!-- -->
 
 ## Distance
+
+``` r
+result.back <- st_distance(back, back, by_element = F)
+result.road <- st_distance(road, road, by_element = F)
+
+colnames(result.back) <- back$Name
+colnames(result.road) <- road$Name
+
+result.back %>% View()
+mean(result.back)
+```
+
+    ## 19482.42 [m]
+
+``` r
+median(result.back)
+```
+
+    ## 18964.77 [m]
+
+``` r
+min(result.back)
+```
+
+    ## 0 [m]

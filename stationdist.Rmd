@@ -16,9 +16,9 @@ library(kableExtra)
 ```{r variables, include=F, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 library(sf)
 library(shiny)
-shp <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/Seoul_City.shp")
-st <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/stations_10km.shp")
-rd <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/GAM/seoul/road_10km.shp")
+shp <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/Seoul_City.shp")
+st <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/stations_10km.shp")
+rd <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/road_10km.shp")
 back <- st %>% filter(F.R == "Fixed")
 road <- st %>% filter(F.R == "Road")
 ```
@@ -50,13 +50,18 @@ plot(st["F.R"], pch = 19 , add = T)
 
 ## Distance
 
-```{r dist, message=FALSE, echo=F, warning=F}
+```{r dist, warning=F}
 result.back <- st_distance(back, back, by_element = F)
 result.road <- st_distance(road, road, by_element = F)
 
 colnames(result.back) <- back$Name
 colnames(result.road) <- road$Name
 
-result.back
+result.back %>% View()
+mean(result.back)
+median(result.back)
+min(result.back)
+
+
 
 ```
