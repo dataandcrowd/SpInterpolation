@@ -16,9 +16,9 @@ library(kableExtra)
 ```{r variables, include=F, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 library(sf)
 library(shiny)
-shp <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/Seoul_City.shp")
-st <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/stations_10km.shp")
-rd <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/road_10km.shp")
+shp <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/Seoul_City.shp")
+st <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/stations_10km.shp")
+rd <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/road_10km.shp")
 back <- st %>% filter(F.R == "Fixed")
 road <- st %>% filter(F.R == "Road")
 ```
@@ -62,6 +62,10 @@ mean(result.back)
 median(result.back)
 min(result.back)
 
+mean(result.back[11,])/1000 
+median(result.back[11,])/1000 
+head(sort(result.back[11,]), 3)
+max(result.back[11,])/1000 
 
 
 ```
