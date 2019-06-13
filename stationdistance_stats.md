@@ -10,18 +10,25 @@
 * Mean Population(2010): 391,772 persons
 * Mean Population density: 17,042 (persons / km<sup>2</sup>)
 
-### Miscellaneous Statistics  
-
+### Distance
 * Closest Stations (background): Gangbuk - Seocho (1.67km)
 * Furthest Stations (background): Onam - Daeya (46.448km, Outside Seoul)
+
+### Area Size
 * Largest Area: Gangnam (47km<sup>2</sup>)
+
+### Population
 * Highest Population: Songpa (646,970)
 * Lowest Population: Jongno (121,144; CBD)
 * Highest Population Density: Yangcheon (26,979)
 * Lowest Population Density: Jung (6,507; CBD)
+
+### Income
 * Highest Monthly Income: Seocho (5,000,000 KRW ≈ £3333) 
 * Lowest Monthly Income: Jung (3,450,000 KRW ≈ £2300)
 
+
+### Distance, Population, and Income in Seoul districts
 
 | No | Name          | Mean_Dist  | Median_Dist | Min_Dist  | Max_Dist   | Area(km<sup>2</sup>) | Population(2010) | Pop Density | Mean Monthly Income (10,000KRW) |
 |----|---------------|-------|--------|------|-------|------|------------|-------------|-------------------------|
