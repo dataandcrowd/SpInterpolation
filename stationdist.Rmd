@@ -16,9 +16,9 @@ library(kableExtra)
 ```{r variables, include=F, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 library(sf)
 library(shiny)
-shp <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/Seoul_City.shp")
-st <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/stations_10km.shp")
-rd <- st_read("D:/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/road_10km.shp")
+shp <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/Seoul_City.shp")
+st <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/stations_10km.shp")
+rd <- st_read("~/Dropbox (Cambridge University)/2019_Cambridge/[Programming]/R/Spatial-Interpolation/seoul/road_10km.shp")
 back <- st %>% filter(F.R == "Fixed")
 road <- st %>% filter(F.R == "Road")
 ```
@@ -41,10 +41,26 @@ kable(stations, caption = "Group Rows") %>%
 ## Maps
 
 ```{r map1, message=FALSE, echo=F, warning=F}
-plot(st_geometry(rd), col = 'grey',key.pos=NULL, reset = F,axes = TRUE, main = "")
-plot(st_geometry(shp), add = T)
-plot(st["F.R"], pch = 19 , add = T)
+#plot(st_geometry(rd), col = 'grey',key.pos=NULL, reset = F,axes = TRUE, main = "")
+#plot(st_geometry(shp), add = T)
+#plot(st["F.R"], pch = 19 , add = T)
 #mapview::mapview(st["F.R"])
+
+ggplot() +
+  geom_sf(data = shp, color = 'black', size = .7, alpha = .5) +
+  geom_point(data = st, aes(x = X, y = Y, colour = F.R)) +
+  #geom_sf(data = rd, colour = "grey") +
+  theme_bw() +
+  theme(axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        #axis.text.y=element_blank(),
+        axis.title.y=element_blank(),
+        strip.text.x = element_text(size = 20),
+        legend.title=element_text(size=15), 
+        legend.text=element_text(size=15),
+        legend.position="bottom"
+  ) 
 ```
 
 
@@ -60,7 +76,7 @@ colnames(result.road) <- road$Name
 result.back %>% View()
 mean(result.back)
 median(result.back)
-min(result.back)
+min(result.back > 0)
 
 
 
