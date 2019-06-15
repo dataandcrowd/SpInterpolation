@@ -78,6 +78,10 @@ mean(result.back)
 median(result.back)
 min(result.back > 0)
 
+mean(result.back[11,])/1000 
+median(result.back[11,])/1000 
+head(sort(result.back[11,]), 3)
+max(result.back[11,])/1000 
 
 
 ```
