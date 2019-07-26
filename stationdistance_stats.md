@@ -1,9 +1,13 @@
 ## Summary Statistics
 
 ### Overall summary
+* Nearest Neighbourhood Index: 1.2 (under 1 exhibits closer to dispersion, over 1 exhibits closer to dispersion)
+* Observed Mean distance: **2969.43m**
+* Expected Mean distance: 2473.327m
+* Z score: 2.89
+* P-value: .0037
 
-* Mean distance: 19.48km
-* Median distance: 18.96km
+
 * Minimum distance: 1.67km
 * Maximum distance: 46.48km
 ~~* Area: 24.2(km<sup>2</sup>)~~
